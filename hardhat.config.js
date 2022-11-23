@@ -12,6 +12,8 @@ module.exports = {
     polygon: {
       url: POLYGON_RPC_URL,
       accounts: [PRIVATE_KEY],
+      chainId: 80001,
+      blockConfirmations: 6,
     },
   },
   etherscan: {

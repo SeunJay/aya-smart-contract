@@ -31,7 +31,7 @@ contract AyaContract {
         uint256 amountInETH = amount * (1 ether);
        require(balances[msg.sender] >=amountInETH, "You don't have enough ETH");
         
-        (bool callSuccess, ) = payable(msg.sender).call{value: amount}("");
+        (bool callSuccess, ) = payable(msg.sender).call{value: amountInETH}("");
         require(callSuccess, "Call failed");
 
         balances[msg.sender] -= amountInETH;

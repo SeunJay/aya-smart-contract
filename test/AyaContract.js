@@ -17,7 +17,6 @@ describe("AyaContract", () => {
 
     await ayaContract.deployed();
 
-    // Fixtures can return anything you consider useful for your tests
     return {
       AyaContract,
       ayaContract,
@@ -62,8 +61,19 @@ describe("AyaContract", () => {
     it("it should revert with the right error if account has no eth deposit", async () => {
       const { ayaContract, addr2 } = await deployAyaContractFixture();
 
-      await expect(ayaContract.connect(addr2).withdraw()).to.be.revertedWith(
-        "You don't have enough eth"
+      await expect(ayaContract.connect(addr2).withdraw(1)).to.be.revertedWith(
+        "You have no deposits"
+      );
+    });
+
+    it("it should revert with the right error if account's balance is not up to amount to be withdrawn", async () => {
+      const { ayaContract, addr2, sendValue2 } =
+        await deployAyaContractFixture();
+
+      await ayaContract.connect(addr2).deposit({ value: sendValue2 });
+
+      await expect(ayaContract.connect(addr2).withdraw(3)).to.be.revertedWith(
+        "You don't have enough ETH"
       );
     });
 
@@ -74,12 +84,12 @@ describe("AyaContract", () => {
       await ayaContract.connect(addr1).deposit({ value: sendValue2 });
 
       const response = await ayaContract.viewBalance(addr1.address);
-      console.log("balance before withdrawing ", response.toString());
+      // console.log("balance before withdrawing ", response.toString());
 
-      await ayaContract.connect(addr1).withdraw();
+      await ayaContract.connect(addr1).withdraw(1);
 
       const response2 = await ayaContract.viewBalance(addr1.address);
-      console.log("balance after withdrawing ", response2.toString());
+      // console.log("balance after withdrawing ", response2.toString());
 
       expect(response.toString()).to.equal(sendValue2.toString());
     });

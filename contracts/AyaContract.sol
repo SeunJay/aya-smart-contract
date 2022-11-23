@@ -10,10 +10,12 @@ contract AyaContract {
       // A mapping is a key/value map. Here we store each account's balance.
     mapping(address => uint256) balances;
 
-    modifier hasETH() {
-        require(balances[msg.sender] > 0, "You don't have enough eth");
+    modifier hasDeposit() {
+        require(balances[msg.sender] > 0, "You have no deposits");
         _;
     }
+
+     
 
      constructor(){
         owner = payable(msg.sender);
@@ -25,11 +27,14 @@ contract AyaContract {
         balances[msg.sender] += msg.value;
      }
 
-     function withdraw() payable hasETH public {
-        (bool callSuccess, ) = payable(msg.sender).call{value: balances[msg.sender]}("");
+     function withdraw(uint256 amount) payable hasDeposit public {
+        uint256 amountInETH = amount * (1 ether);
+       require(balances[msg.sender] >=amountInETH, "You don't have enough ETH");
+        
+        (bool callSuccess, ) = payable(msg.sender).call{value: amount}("");
         require(callSuccess, "Call failed");
 
-        balances[msg.sender] -= balances[msg.sender];
+        balances[msg.sender] -= amountInETH;
      }
 
 
